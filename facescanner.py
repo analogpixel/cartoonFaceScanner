@@ -91,6 +91,13 @@ class cartoonFace(wx.Frame):
                 self.stage = 1
             else:
                 self.stage = 0
+                self.detector = False
+                self.predictor = False
+                self.cannyBottom = 120
+                self.cannyTop = 80
+                self.faceArt = False
+                self.faceFeatures = False
+                self.faceDetectFrame = False
 
         # up arrow
         if keycode == 315:
@@ -166,12 +173,12 @@ class cartoonFace(wx.Frame):
         elif self.stage == 2:
 
             eyeR1   = self.faceFeatures[0][43][0]
-            eyeR1y  = self.faceFeatures[0][23][1]
+            eyeR1y  = self.faceFeatures[0][44][1]
             eyeR2   = self.faceFeatures[0][46][0]
             eyeRC   = self.faceFeatures[0][48][0]
 
             eyeL1   = self.faceFeatures[0][37][0]
-            eyeL1y  = self.faceFeatures[0][18][1]
+            eyeL1y  = self.faceFeatures[0][38][1]
             eyeL2   = self.faceFeatures[0][40][0]
             eyeLC   = self.faceFeatures[0][42][0]
 
@@ -187,15 +194,15 @@ class cartoonFace(wx.Frame):
 
             rwidth = (eyeR2-eyeR1)*3.5
             lwidth = (eyeL2-eyeL1)*3.5
-            mwidth = (mouthR-mouthL)*2.5
+            mwidth = (mouthR-mouthL)*1.8
 
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) ,eyeR1y-15, True)
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=lwidth) , eyeLC - (lwidth /2) ,eyeL1y-15, True)
+            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) -10  ,eyeR1y-25, True)
+            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=lwidth) , eyeLC - (lwidth /2) +10  ,eyeR1y-25, True)
 
             dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[self.faceArt.currentMouth],
                                                 w=mwidth),
-                                                mouthC - ( mwidth /2),
-                                                mouthLy,
+                                                mouthC - ( mwidth /2) +10 ,
+                                                mouthLy+4,
                                                 True)
 
 
