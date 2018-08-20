@@ -11,6 +11,12 @@ class faceArt:
         self.maxEyes = 12
         self.maxMouth = 9
 
+        self.currentEyes = 0
+        self.currentMouth = 0
+        self.featureType = 0
+        self.featureList = ['eyes','mouths']
+
+
         print("Loading eyes")
         for i in range(1,self.maxEyes+1):
             self.eyesR.append( self.loadImage(self.imgPath + "eye" + str(i) + "_R@3x.png" ) )
@@ -32,3 +38,32 @@ class faceArt:
             image = image.Scale(size.width * wscale, size.height * wscale, wx.IMAGE_QUALITY_HIGH)
 
         return image.ConvertToBitmap()
+
+    def switchFeatureTypeUp(self):
+        self.featureType += 1
+        if self.featureType > len(self.featureList)-1:
+            self.featureType = 0
+
+    def switchFeatureTypeDown(self):
+        self.featureType -= 1
+        if self.featureType < 0:
+            self.featureType = len(self.featureList)-1
+
+    def switchFeatureUp(self):
+        if self.featureType == 0:
+            self.currentEyes +=1
+            if self.currentEyes > self.maxEyes:
+                self.currentEyes = 0
+        elif self.featureType == 1:
+            self.currentMouth +=1
+            if self.currentMouth > self.maxMouth:
+                self.currentMouth = 0
+    def switchFeatureDown(self):
+        if self.featureType == 0:
+            self.currentEyes -=1
+            if self.currentEyes <  0:
+                self.currentEyes = self.maxEyes
+        elif self.featureType == 1:
+            self.currentMouth -=1
+            if self.currentMouth < 0:
+                self.currentMouth = self.maxMouth

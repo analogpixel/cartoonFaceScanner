@@ -94,16 +94,16 @@ class cartoonFace(wx.Frame):
 
         # up arrow
         if keycode == 315:
-            self.cannyBottom +=10
+            self.faceArt.switchFeatureTypeDown()
         # down arrow
         if keycode == 317:
-            self.cannyBottom -=10
+            self.faceArt.switchFeatureTypeUp()
         # left arrow
         if keycode == 314:
-            self.cannyTop -=10
+            self.faceArt.switchFeatureDown()
         # right arrow
         if keycode == 316:
-            self.cannyTop +=10
+            self.faceArt.switchFeatureUp()
 
         print(self.cannyBottom, self.cannyTop)
 
@@ -173,17 +173,18 @@ class cartoonFace(wx.Frame):
             eyeL1y = self.faceFeatures[0][18][1]
             eyeL2 = self.faceFeatures[0][40][0]
 
-            mouthL = self.faceFeatures[0][49]
-            mouthLy = self.faceFeatures[0][51]
-            mouthR = self.faceFeatures[0][55]
+            mouthL = self.faceFeatures[0][49][0]
+            mouthLy = self.faceFeatures[0][51][1]
+            mouthR = self.faceFeatures[0][55][0]
 
             buffer = wx.Bitmap(self.cw, self.ch)
             dc     = wx.MemoryDC(buffer)
             dc.Clear()
             dc.DrawBitmap( self.bmp, 0,0 )
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[0], w=(eyeR2-eyeR1)*3) , eyeR1-20 ,eyeR1y-15, True)
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[0], w=(eyeL2-eyeL1)*3) , eyeL1-20 ,eyeL1y-15, True)
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[0], w=(mouthR-mouthL)*3), mouthL, mouthLy, True)
+            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=(eyeR2-eyeR1)*3.5) , eyeR1-20 ,eyeR1y-15, True)
+            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=(eyeL2-eyeL1)*3.5) , eyeL1-20 ,eyeL1y-15, True)
+            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[self.faceArt.currentMouth], w=(mouthR-mouthL)*2.5), mouthL-40, mouthLy, True)
+
 
             self.staticBitmap.SetBitmap(buffer)
 
