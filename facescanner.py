@@ -165,25 +165,38 @@ class cartoonFace(wx.Frame):
         # Stage 2, show the final image
         elif self.stage == 2:
 
-            eyeR1 = self.faceFeatures[0][43][0]
-            eyeR1y = self.faceFeatures[0][23][1]
-            eyeR2 = self.faceFeatures[0][46][0]
+            eyeR1   = self.faceFeatures[0][43][0]
+            eyeR1y  = self.faceFeatures[0][23][1]
+            eyeR2   = self.faceFeatures[0][46][0]
+            eyeRC   = self.faceFeatures[0][48][0]
 
-            eyeL1 = self.faceFeatures[0][37][0]
-            eyeL1y = self.faceFeatures[0][18][1]
-            eyeL2 = self.faceFeatures[0][40][0]
+            eyeL1   = self.faceFeatures[0][37][0]
+            eyeL1y  = self.faceFeatures[0][18][1]
+            eyeL2   = self.faceFeatures[0][40][0]
+            eyeLC   = self.faceFeatures[0][42][0]
 
-            mouthL = self.faceFeatures[0][49][0]
+            mouthL  = self.faceFeatures[0][49][0]
             mouthLy = self.faceFeatures[0][51][1]
-            mouthR = self.faceFeatures[0][55][0]
+            mouthR  = self.faceFeatures[0][55][0]
+            mouthC  = self.faceFeatures[0][67][0]
 
             buffer = wx.Bitmap(self.cw, self.ch)
             dc     = wx.MemoryDC(buffer)
             dc.Clear()
             dc.DrawBitmap( self.bmp, 0,0 )
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=(eyeR2-eyeR1)*3.5) , eyeR1-20 ,eyeR1y-15, True)
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=(eyeL2-eyeL1)*3.5) , eyeL1-20 ,eyeL1y-15, True)
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[self.faceArt.currentMouth], w=(mouthR-mouthL)*2.5), mouthL-40, mouthLy, True)
+
+            rwidth = (eyeR2-eyeR1)*3.5
+            lwidth = (eyeL2-eyeL1)*3.5
+            mwidth = (mouthR-mouthL)*2.5
+
+            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) ,eyeR1y-15, True)
+            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=lwidth) , eyeLC - (lwidth /2) ,eyeL1y-15, True)
+
+            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[self.faceArt.currentMouth],
+                                                w=mwidth),
+                                                mouthC - ( mwidth /2),
+                                                mouthLy,
+                                                True)
 
 
             self.staticBitmap.SetBitmap(buffer)
