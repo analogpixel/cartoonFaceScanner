@@ -112,10 +112,8 @@ class cartoonFace(wx.Frame):
         if keycode == 316:
             self.faceArt.switchFeatureUp()
 
-        print(self.cannyBottom, self.cannyTop)
-
-
-        print(event)
+        #print(self.cannyBottom, self.cannyTop)
+        #print(event)
 
     def processImage(self):
         # convert to grayscale
@@ -150,7 +148,7 @@ class cartoonFace(wx.Frame):
                 dc.DrawBitmap(self.bmp, 0,0)
                 dc.SetPen(wx.Pen("blue", width=10))
                 dc.SetBrush(wx.Brush("blue", wx.TRANSPARENT))
-                dc.DrawRectangle(self.cw/3 ,20 , self.cw/3 ,self.ch-60)
+                dc.DrawRectangle(self.cw/3 ,20 , self.cw/3 ,self.ch-100)
 
                 #self.staticBitmap.SetBitmap(self.bmp)
                 self.staticBitmap.SetBitmap(buffer)
@@ -166,8 +164,12 @@ class cartoonFace(wx.Frame):
             print("Detecting Facial Features")
             self.faceFeatures = self.detectFace()
 
-            self.bmp.CopyFromBuffer(self.processImage())
-            self.stage = 2
+            if  len(self.faceFeatures) == 0:
+                print("No features found")
+                self.stage = 0
+            else:
+                self.bmp.CopyFromBuffer(self.processImage())
+                self.stage = 2
 
         # Stage 2, show the final image
         elif self.stage == 2:
@@ -196,8 +198,8 @@ class cartoonFace(wx.Frame):
             lwidth = (eyeL2-eyeL1)*3.5
             mwidth = (mouthR-mouthL)*1.8
 
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) -10  ,eyeR1y-25, True)
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=lwidth) , eyeLC - (lwidth /2) +10  ,eyeR1y-25, True)
+            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) -10  ,eyeR1y-35, True)
+            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=lwidth) , eyeLC - (lwidth /2) +10  ,eyeR1y-35, True)
 
             dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[self.faceArt.currentMouth],
                                                 w=mwidth),

@@ -52,18 +52,19 @@ class faceArt:
     def switchFeatureUp(self):
         if self.featureType == 0:
             self.currentEyes +=1
-            if self.currentEyes > self.maxEyes:
+            if self.currentEyes >= self.maxEyes:
                 self.currentEyes = 0
         elif self.featureType == 1:
             self.currentMouth +=1
-            if self.currentMouth > self.maxMouth:
+            if self.currentMouth >= self.maxMouth:
                 self.currentMouth = 0
+
     def switchFeatureDown(self):
         if self.featureType == 0:
             self.currentEyes -=1
             if self.currentEyes <  0:
-                self.currentEyes = self.maxEyes
+                self.currentEyes = self.maxEyes -1
         elif self.featureType == 1:
             self.currentMouth -=1
             if self.currentMouth < 0:
-                self.currentMouth = self.maxMouth
+                self.currentMouth = self.maxMouth -1
