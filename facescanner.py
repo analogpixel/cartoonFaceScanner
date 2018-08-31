@@ -21,7 +21,7 @@ class cartoonFace(wx.Frame):
         self.bmp = wx.Bitmap(self.cw,self.ch, depth=16)
         self.detector = False
         self.predictor = False
-        self.cannyBottom = 120
+        self.cannyBottom = 110
         self.cannyTop = 80
         self.faceArt = False
         self.faceFeatures = False
@@ -194,12 +194,12 @@ class cartoonFace(wx.Frame):
             dc.Clear()
             dc.DrawBitmap( self.bmp, 0,0 )
 
-            rwidth = (eyeR2-eyeR1)*3.5
-            lwidth = (eyeL2-eyeL1)*3.5
-            mwidth = (mouthR-mouthL)*1.8
+            rwidth = (eyeR2-eyeR1)*4
+            lwidth = (eyeL2-eyeL1)*4
+            mwidth = (mouthR-mouthL)*2.2
 
             dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) -10  ,eyeR1y-35, True)
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=lwidth) , eyeLC - (lwidth /2) +10  ,eyeR1y-35, True)
+            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=rwidth) , eyeLC - (lwidth /2) +10  ,eyeR1y-35, True)
 
             dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[self.faceArt.currentMouth],
                                                 w=mwidth),
