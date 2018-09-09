@@ -7,6 +7,14 @@ from imutils import face_utils
 import pprint
 import numpy as np
 import faceart
+import os
+
+try:
+  import RPi.GPIO as GPIO
+  PI = True
+except:
+  print("not a pi")
+  PI = False
 
 class cartoonFace(wx.Frame):
     def __init__(self, parent, capture,  fps=15):
@@ -26,6 +34,7 @@ class cartoonFace(wx.Frame):
         self.faceArt = False
         self.faceFeatures = False
         self.faceDetectFrame = False
+        self.toPrint = False
 
         super(cartoonFace, self).__init__(parent,title="Facer", size=(self.cw, self.ch) )
 
@@ -47,11 +56,46 @@ class cartoonFace(wx.Frame):
 
         self.timer = wx.Timer(self)
         self.timer.Start(1000./fps)
+        self.Bind(wx.EVT_TIMER, self.NextFrame, self.timer)
+        if PI:
+            GPIO.setmode (GPIO.BCM)
+            GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            self.piTimer = wx.Timer(self)
+            self.piTimer.Start(100)
+            self.Bind(wx.EVT_TIMER, self.checkPI, self.piTimer)
+
 
         self.Bind(wx.EVT_PAINT, self.OnPaint)
-        self.Bind(wx.EVT_TIMER, self.NextFrame)
+   #     self.Bind(wx.EVT_TIMER, self.timerEvent)
+#        self.Bind(wx.EVT_TIMER, self.NextFrame)
+
+
         inside.Bind(wx.EVT_KEY_DOWN, self.onKeyPress)
         inside.SetFocus()
+
+    def timerEvent(self, event):
+        print(event.GetEventObject() )
+
+        if event.GetEventObject() == self.timer:
+            self.NextFrame()
+        if event.GetEventObject() == self.piTimer:
+            self.checkPI()
+
+    def checkPI(self,event):
+        if ( not GPIO.input(17) ):
+            print("button pressed")
+            if self.stage == 0:
+                self.stage = 1
+            else:
+                self.stage = 0
+                self.detector = False
+                self.predictor = False
+                self.cannyBottom = 120
+                self.cannyTop = 80
+                self.faceArt = False
+                self.faceFeatures = False
+                self.faceDetectFrame = False
+
 
     def detectFace(self):
         faceFeatures = []
@@ -99,6 +143,11 @@ class cartoonFace(wx.Frame):
                 self.faceFeatures = False
                 self.faceDetectFrame = False
 
+        if ( ord('P') == keycode):
+            if self.stage == 2:
+                self.toPrint.SaveFile("toprint.png", wx.BITMAP_TYPE_PNG)
+                os.system("lp toprint.png")
+
         # up arrow
         if keycode == 315:
             self.faceArt.switchFeatureTypeDown()
@@ -111,6 +160,9 @@ class cartoonFace(wx.Frame):
         # right arrow
         if keycode == 316:
             self.faceArt.switchFeatureUp()
+
+        # force an image refresh
+        self.toPrint = False
 
         #print(self.cannyBottom, self.cannyTop)
         #print(event)
@@ -174,41 +226,42 @@ class cartoonFace(wx.Frame):
         # Stage 2, show the final image
         elif self.stage == 2:
 
-            eyeR1   = self.faceFeatures[0][43][0]
-            eyeR1y  = self.faceFeatures[0][44][1]
-            eyeR2   = self.faceFeatures[0][46][0]
-            eyeRC   = self.faceFeatures[0][48][0]
+            if not self.toPrint:
+                eyeR1   = self.faceFeatures[0][43][0]
+                eyeR1y  = self.faceFeatures[0][44][1]
+                eyeR2   = self.faceFeatures[0][46][0]
+                eyeRC   = self.faceFeatures[0][48][0]
 
-            eyeL1   = self.faceFeatures[0][37][0]
-            eyeL1y  = self.faceFeatures[0][38][1]
-            eyeL2   = self.faceFeatures[0][40][0]
-            eyeLC   = self.faceFeatures[0][42][0]
+                eyeL1   = self.faceFeatures[0][37][0]
+                eyeL1y  = self.faceFeatures[0][38][1]
+                eyeL2   = self.faceFeatures[0][40][0]
+                eyeLC   = self.faceFeatures[0][42][0]
 
-            mouthL  = self.faceFeatures[0][49][0]
-            mouthLy = self.faceFeatures[0][51][1]
-            mouthR  = self.faceFeatures[0][55][0]
-            mouthC  = self.faceFeatures[0][67][0]
+                mouthL  = self.faceFeatures[0][49][0]
+                mouthLy = self.faceFeatures[0][51][1]
+                mouthR  = self.faceFeatures[0][55][0]
+                mouthC  = self.faceFeatures[0][67][0]
 
-            buffer = wx.Bitmap(self.cw, self.ch)
-            dc     = wx.MemoryDC(buffer)
-            dc.Clear()
-            dc.DrawBitmap( self.bmp, 0,0 )
+                self.toPrint = wx.Bitmap(self.cw, self.ch)
+                dc     = wx.MemoryDC(self.toPrint)
+                dc.Clear()
+                dc.DrawBitmap( self.bmp, 0,0 )
 
-            rwidth = (eyeR2-eyeR1)*4
-            lwidth = (eyeL2-eyeL1)*4
-            mwidth = (mouthR-mouthL)*2.2
+                rwidth = (eyeR2-eyeR1)*4
+                lwidth = (eyeL2-eyeL1)*4
+                mwidth = (mouthR-mouthL)*2.2
 
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) -10  ,eyeR1y-35, True)
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=rwidth) , eyeLC - (lwidth /2) +10  ,eyeR1y-35, True)
+                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) -10  ,eyeR1y-35, True)
+                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=rwidth) , eyeLC - (lwidth /2) +10  ,eyeR1y-35, True)
 
-            dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[self.faceArt.currentMouth],
-                                                w=mwidth),
-                                                mouthC - ( mwidth /2) +10 ,
-                                                mouthLy+4,
-                                                True)
+                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[self.faceArt.currentMouth],
+                                                    w=mwidth),
+                                                    mouthC - ( mwidth /2) +10 ,
+                                                    mouthLy+4,
+                                                    True)
 
 
-            self.staticBitmap.SetBitmap(buffer)
+                self.staticBitmap.SetBitmap(self.toPrint)
 
         self.Refresh()
 
