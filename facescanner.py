@@ -60,6 +60,11 @@ class cartoonFace(wx.Frame):
         if PI:
             GPIO.setmode (GPIO.BCM)
             GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+            GPIO.setup(5, GPIO.IN, pull_up_down=GPIO.PUD_UP)
             self.piTimer = wx.Timer(self)
             self.piTimer.Start(100)
             self.Bind(wx.EVT_TIMER, self.checkPI, self.piTimer)
