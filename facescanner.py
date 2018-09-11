@@ -82,7 +82,33 @@ class cartoonFace(wx.Frame):
             self.checkPI()
 
     def checkPI(self,event):
-        if ( not GPIO.input(17) ):
+        # up pressed
+        if ( not GPIO.input(12) ):
+            self.faceArt.switchFeatureTypeDown()
+
+        # down pressed
+        if ( not GPIO.input(16) ):
+            self.faceArt.switchFeatureTypeUp()
+
+        # left pressed
+        if ( not GPIO.input(13)):
+            self.faceArt.switchFeatureDown()
+
+        # right pressed
+        if (not GPIO.input(17)):
+            self.faceArt.switchFeatureUp()
+
+
+        # red Button pressed
+        # print
+        if (not GPIO.input(6)):
+            if self.stage == 2:
+                self.toPrint.SaveFile("toprint.png", wx.BITMAP_TYPE_PNG)
+                os.system("lp toprint.png")
+
+        # black button pressed
+        # capture and switch modes
+        if ( not GPIO.input(5)):
             print("button pressed")
             if self.stage == 0:
                 self.stage = 1
