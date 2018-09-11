@@ -90,18 +90,22 @@ class cartoonFace(wx.Frame):
         # up pressed
         if ( not GPIO.input(12) ):
             self.faceArt.switchFeatureTypeDown()
+            self.toPrint = False
 
         # down pressed
         if ( not GPIO.input(16) ):
             self.faceArt.switchFeatureTypeUp()
+            self.toPrint = False
 
         # left pressed
         if ( not GPIO.input(13)):
             self.faceArt.switchFeatureDown()
+            self.toPrint = False
 
         # right pressed
         if (not GPIO.input(17)):
             self.faceArt.switchFeatureUp()
+            self.toPrint = False
 
 
         # red Button pressed
