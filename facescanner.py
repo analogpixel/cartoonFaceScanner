@@ -9,6 +9,8 @@ import numpy as np
 import faceart
 import os
 
+## password for pi is pi!
+
 try:
   import RPi.GPIO as GPIO
   PI = True
@@ -35,6 +37,7 @@ class cartoonFace(wx.Frame):
         self.faceFeatures = False
         self.faceDetectFrame = False
         self.toPrint = False
+        self.loadingImage = wx.Image("resources/loading.png", type=wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 
         super(cartoonFace, self).__init__(parent,title="Facer", size=(self.cw, self.ch) )
 
@@ -57,6 +60,8 @@ class cartoonFace(wx.Frame):
         self.timer = wx.Timer(self)
         self.timer.Start(1000./fps)
         self.Bind(wx.EVT_TIMER, self.NextFrame, self.timer)
+
+        # If we are on a PI, configure the buttons to do stuff
         if PI:
             GPIO.setmode (GPIO.BCM)
             GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -69,12 +74,7 @@ class cartoonFace(wx.Frame):
             self.piTimer.Start(100)
             self.Bind(wx.EVT_TIMER, self.checkPI, self.piTimer)
 
-
         self.Bind(wx.EVT_PAINT, self.OnPaint)
-   #     self.Bind(wx.EVT_TIMER, self.timerEvent)
-#        self.Bind(wx.EVT_TIMER, self.NextFrame)
-
-
         inside.Bind(wx.EVT_KEY_DOWN, self.onKeyPress)
         inside.SetFocus()
 
@@ -85,6 +85,15 @@ class cartoonFace(wx.Frame):
             self.NextFrame()
         if event.GetEventObject() == self.piTimer:
             self.checkPI()
+
+
+
+    def printImage(self):
+        # check if we are already printing
+
+        # then print
+        self.toPrint.SaveFile("toprint.png", wx.BITMAP_TYPE_PNG)
+        os.system("lp toprint.png")
 
     def checkPI(self,event):
         # up pressed
@@ -111,9 +120,9 @@ class cartoonFace(wx.Frame):
         # red Button pressed
         # print
         if (not GPIO.input(6)):
+            # if we are in the correct statge, and not already printing something
             if self.stage == 2:
-                self.toPrint.SaveFile("toprint.png", wx.BITMAP_TYPE_PNG)
-                os.system("lp toprint.png")
+                self.printImage();
 
         # black button pressed
         # capture and switch modes
@@ -121,6 +130,7 @@ class cartoonFace(wx.Frame):
             print("button pressed")
             if self.stage == 0:
                 self.stage = 1
+                self.staticBitmap.SetBitmap(self.loadingImage)
             else:
                 self.stage = 0
                 self.detector = False
@@ -167,7 +177,7 @@ class cartoonFace(wx.Frame):
 
         if (ord('C') == keycode):
             if self.stage == 0:
-                self.stage = 1
+                self.stage = 3
             else:
                 self.stage = 0
                 self.detector = False
@@ -180,8 +190,7 @@ class cartoonFace(wx.Frame):
 
         if ( ord('P') == keycode):
             if self.stage == 2:
-                self.toPrint.SaveFile("toprint.png", wx.BITMAP_TYPE_PNG)
-                os.system("lp toprint.png")
+                self.printImage();
 
         # up arrow
         if keycode == 315:
@@ -248,6 +257,8 @@ class cartoonFace(wx.Frame):
                 print("Loading Face art")
                 self.faceArt = faceart.faceArt()
 
+
+
             print("Detecting Facial Features")
             self.faceFeatures = self.detectFace()
 
@@ -277,6 +288,12 @@ class cartoonFace(wx.Frame):
                 mouthR  = self.faceFeatures[0][55][0]
                 mouthC  = self.faceFeatures[0][67][0]
 
+                noseX = self.faceFeatures[0][28][0]
+                noseYTop = self.faceFeatures[0][28][1]
+                noseYBottom = self.faceFeatures[0][34][1]
+                noseWidth = (self.faceFeatures[0][32][0] - self.faceFeatures[0][36][0]) * 1.5
+
+
                 self.toPrint = wx.Bitmap(self.cw, self.ch)
                 dc     = wx.MemoryDC(self.toPrint)
                 dc.Clear()
@@ -286,6 +303,7 @@ class cartoonFace(wx.Frame):
                 lwidth = (eyeL2-eyeL1)*4
                 mwidth = (mouthR-mouthL)*2.2
 
+                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.noses[self.faceArt.currentNose], w=noseWidth), noseX-(noseWidth/2), (noseYTop+noseYBottom)/2 , True)
                 dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) -10  ,eyeR1y-35, True)
                 dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=rwidth) , eyeLC - (lwidth /2) +10  ,eyeR1y-35, True)
 
@@ -295,8 +313,17 @@ class cartoonFace(wx.Frame):
                                                     mouthLy+4,
                                                     True)
 
-
-                self.staticBitmap.SetBitmap(self.toPrint)
+            else:
+                self.overlay = wx.Bitmap(self.cw, self.ch)
+                dc = wx.MemoryDC(self.overlay)
+                font = wx.Font(30, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+                dc.SetFont(font)
+                dc.DrawBitmap( self.toPrint,0,0)
+                dc.DrawText( "Change the " + self.faceArt.featureList[self.faceArt.featureType] , 10,10)
+                self.staticBitmap.SetBitmap(self.overlay)
+        elif self.stage == 3:
+            self.staticBitmap.SetBitmap(self.loadingImage)
+            self.stage = 1
 
         self.Refresh()
 

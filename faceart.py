@@ -10,11 +10,13 @@ class faceArt:
         self.eyesL  =[]
         self.maxEyes = 12
         self.maxMouth = 9
+        self.maxNose = 5
 
         self.currentEyes = 0
         self.currentMouth = 0
+        self.currentNose = 0
         self.featureType = 0
-        self.featureList = ['eyes','mouths']
+        self.featureList = ['eyes','mouths', 'nose']
 
 
         print("Loading eyes")
@@ -26,6 +28,11 @@ class faceArt:
         self.mouths = []
         for i in range(1,self.maxMouth + 1):
             self.mouths.append( self.loadImage(self.imgPath + "mouth" + str(i) + "@3x.png" ) )
+
+        print("Loading Noses")
+        self.noses = []
+        for i in range(1, self.maxNose + 1):
+            self.noses.append( self.loadImage( self.imgPath + "nose" + str(i) + "@3x.png") )
 
     def loadImage(self, filename):
         image = wx.Image(filename, type=wx.BITMAP_TYPE_PNG)
@@ -58,6 +65,10 @@ class faceArt:
             self.currentMouth +=1
             if self.currentMouth >= self.maxMouth:
                 self.currentMouth = 0
+        elif self.featureType == 2:
+            self.currentNose +=1
+            if self.currentNose >= self.maxNose:
+                self.currentNose = 0
 
     def switchFeatureDown(self):
         if self.featureType == 0:
@@ -68,3 +79,7 @@ class faceArt:
             self.currentMouth -=1
             if self.currentMouth < 0:
                 self.currentMouth = self.maxMouth -1
+        elif self.featureType == 2:
+            self.currentNose -=1
+            if self.currentNose < 0:
+                self.currentNose = self.maxNose -1
