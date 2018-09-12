@@ -291,7 +291,7 @@ class cartoonFace(wx.Frame):
                 noseX = self.faceFeatures[0][28][0]
                 noseYTop = self.faceFeatures[0][28][1]
                 noseYBottom = self.faceFeatures[0][34][1]
-                noseWidth = (self.faceFeatures[0][32][0] - self.faceFeatures[0][36][0]) * 1.5
+                noseWidth = (self.faceFeatures[0][32][0] - self.faceFeatures[0][36][0]) * 1.3
 
 
                 self.toPrint = wx.Bitmap(self.cw, self.ch)
@@ -316,9 +316,11 @@ class cartoonFace(wx.Frame):
             else:
                 self.overlay = wx.Bitmap(self.cw, self.ch)
                 dc = wx.MemoryDC(self.overlay)
+                dc.SetBrush(wx.Brush("white", wx.SOLID))
                 font = wx.Font(30, wx.FONTFAMILY_ROMAN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
                 dc.SetFont(font)
                 dc.DrawBitmap( self.toPrint,0,0)
+                dc.DrawRectangle( 0,0, self.cw, 60)
                 dc.DrawText( "Change the " + self.faceArt.featureList[self.faceArt.featureType] , 10,10)
                 self.staticBitmap.SetBitmap(self.overlay)
         elif self.stage == 3:
