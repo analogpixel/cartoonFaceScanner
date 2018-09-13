@@ -8,6 +8,7 @@ import pprint
 import numpy as np
 import faceart
 import os
+import subprocess
 
 ## password for pi is pi!
 
@@ -25,8 +26,10 @@ class cartoonFace(wx.Frame):
         self.stage = 0
 
         # configure global variables
-        self.cw = 1280
-        self.ch =  720
+        #self.cw = 1280
+        #self.ch =  720
+        self.cw = 800
+        self.ch = 600
         self.capture = capture
         self.bmp = wx.Bitmap(self.cw,self.ch, depth=16)
         self.detector = False
@@ -90,6 +93,10 @@ class cartoonFace(wx.Frame):
 
     def printImage(self):
         # check if we are already printing
+        result = subprocess.run(['/usr/bin/lpstat', '-o'], stdout=subprocess.PIPE).stdout
+        if len(result) > 1:
+          print("Already printing")
+          return
 
         # then print
         self.toPrint.SaveFile("toprint.png", wx.BITMAP_TYPE_PNG)
@@ -291,7 +298,7 @@ class cartoonFace(wx.Frame):
                 noseX = self.faceFeatures[0][28][0]
                 noseYTop = self.faceFeatures[0][28][1]
                 noseYBottom = self.faceFeatures[0][34][1]
-                noseWidth = (self.faceFeatures[0][32][0] - self.faceFeatures[0][36][0]) * 1.3
+                noseWidth = (self.faceFeatures[0][32][0] - self.faceFeatures[0][36][0]) * 1
 
 
                 self.toPrint = wx.Bitmap(self.cw, self.ch)
@@ -304,12 +311,12 @@ class cartoonFace(wx.Frame):
                 mwidth = (mouthR-mouthL)*2.2
 
                 dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.noses[self.faceArt.currentNose], w=noseWidth), noseX-(noseWidth/2), (noseYTop+noseYBottom)/2 , True)
-                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) -10  ,eyeR1y-35, True)
-                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=rwidth) , eyeLC - (lwidth /2) +10  ,eyeR1y-35, True)
+                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) -10  ,eyeR1y-15, True)
+                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=rwidth) , eyeLC - (lwidth /2) +10  ,eyeR1y-15, True)
 
                 dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[self.faceArt.currentMouth],
                                                     w=mwidth),
-                                                    mouthC - ( mwidth /2) +10 ,
+                                                    mouthC - ( mwidth /2) +1 ,
                                                     mouthLy+4,
                                                     True)
 
@@ -330,8 +337,11 @@ class cartoonFace(wx.Frame):
         self.Refresh()
 
 capture = cv2.VideoCapture(0)
-capture.set(3, 1280)
-capture.set(4, 720)
+#capture.set(3, 1280)
+#capture.set(4, 720)
+
+capture.set(3,800)
+capture.set(4,600)
 
 app = wx.App()
 cap = cartoonFace(None, capture)
