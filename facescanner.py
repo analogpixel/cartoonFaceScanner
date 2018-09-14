@@ -16,22 +16,23 @@ import time
 try:
   import RPi.GPIO as GPIO
   PI = True
+  gw=800
+  gh=600
 except:
   print("not a pi")
   PI = False
+  gw=1280
+  gh=720
 
 class cartoonFace(wx.Frame):
-    def __init__(self, parent, capture,  fps=15):
+    def __init__(self, parent, capture,  w=800, h=600, fps=15):
         wx.Frame.__init__(self, parent)
 
         self.stage = 0
         self.debounce = 0
-        self.damt = 5
-        # configure global variables
-        #self.cw = 1280
-        #self.ch =  720
-        self.cw = 800
-        self.ch = 600
+        self.damt = 5   # wait this many cycles before allowing input again
+        self.cw = w # width of camera and display
+        self.ch = h # heigh of camera and display
         self.capture = capture
         self.bmp = wx.Bitmap(self.cw,self.ch, depth=16)
         self.detector = False
@@ -258,6 +259,7 @@ class cartoonFace(wx.Frame):
         # Stage 0, live video to align your face in the box
         if self.stage == 0:
             ret, frame = self.capture.read()
+
             # flip the image horizontaly so it doesn't look mirrored
             frame = cv2.flip( frame, 1 )
             self.faceDetectFrame = frame
@@ -282,8 +284,6 @@ class cartoonFace(wx.Frame):
             if not self.faceArt:
                 print("Loading Face art")
                 self.faceArt = faceart.faceArt()
-
-
 
             print("Detecting Facial Features")
             self.faceFeatures = self.detectFace()
@@ -359,10 +359,10 @@ capture = cv2.VideoCapture(0)
 #capture.set(3, 1280)
 #capture.set(4, 720)
 
-capture.set(3,800)
-capture.set(4,600)
+capture.set(3,gw)
+capture.set(4,gh)
 
 app = wx.App()
-cap = cartoonFace(None, capture)
+cap = cartoonFace(None, capture, gw,gh)
 cap.Show()
 app.MainLoop()
