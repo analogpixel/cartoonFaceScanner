@@ -51,7 +51,7 @@ class cartoonFace(wx.Frame):
 
         # confgure the main box
         panel = wx.Panel(self)
-        panel.SetBackgroundColour("#4f5049")
+        panel.SetBackgroundColour("#1C2826")
         vbox = wx.BoxSizer(wx.VERTICAL)
 
         # configure the middle part that holds the image
@@ -59,8 +59,8 @@ class cartoonFace(wx.Frame):
         inside.SetBackgroundColour('#ededed')
         self.staticBitmap = wx.StaticBitmap(inside)
 
-        # add the inside to the vbox with a border of 20 pixels
-        vbox.Add(inside, wx.ID_ANY, wx.EXPAND | wx.ALL, 20)
+        # add the inside to the vbox with a border of 10 pixels
+        vbox.Add(inside, wx.ID_ANY, wx.EXPAND | wx.ALL, 10)
         panel.SetSizer(vbox)
 
         self.timer = wx.Timer(self)
