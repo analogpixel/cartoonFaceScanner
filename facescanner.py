@@ -189,7 +189,7 @@ class cartoonFace(wx.Frame):
             shape = self.predictor(gray, rect)
             shape = face_utils.shape_to_np(shape)
             faceFeatures.append(shape)
-        
+
         self.toPrint = False
         return faceFeatures
 
@@ -329,9 +329,20 @@ class cartoonFace(wx.Frame):
                 lwidth = (eyeL2-eyeL1)*4
                 mwidth = (mouthR-mouthL)*2.2
 
-                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.noses[self.faceArt.currentNose], w=noseWidth), noseX-(noseWidth/2), (noseYTop+noseYBottom)/2 , True)
-                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) , eyeRC - (rwidth /2) -10  ,eyeR1y-15, True)
-                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=rwidth) , eyeLC - (lwidth /2) +10  ,eyeR1y-15, True)
+                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.noses[self.faceArt.currentNose], w=noseWidth),
+                    noseX-(noseWidth/2),
+                    (noseYTop+noseYBottom)/2 + self.ch * 0.008,
+                    True)
+
+                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) ,
+                    eyeRC - (rwidth /2) -10  ,
+                    eyeR1y-15 - self.ch * .01,
+                    True)
+
+                dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=rwidth) ,
+                    eyeLC - (lwidth /2) +10  - self.ch * .01,
+                    eyeR1y-15,
+                    True)
 
                 dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[self.faceArt.currentMouth],
                                                     w=mwidth),
