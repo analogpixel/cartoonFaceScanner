@@ -156,6 +156,7 @@ class cartoonFace(wx.Frame):
             print("button pressed")
             if self.stage == 0:
                 self.staticBitmap.SetBitmap(self.loadingImage)
+                self.Update()
                 self.stage = 1
             else:
                 self.stage = 0
