@@ -9,6 +9,7 @@ import numpy as np
 import faceart
 import os
 import subprocess
+import time
 
 ## password for pi is pi!
 
@@ -24,7 +25,8 @@ class cartoonFace(wx.Frame):
         wx.Frame.__init__(self, parent)
 
         self.stage = 0
-
+        self.debounce = 0
+        self.damt = 5
         # configure global variables
         #self.cw = 1280
         #self.ch =  720
@@ -103,23 +105,35 @@ class cartoonFace(wx.Frame):
         os.system("lp toprint.png")
 
     def checkPI(self,event):
+        if self.debounce > 0:
+           self.debounce -= 1
+           return
+
         # up pressed
         if ( not GPIO.input(12) ):
+            time.sleep(.01)
+            self.debounce = self.damt
             self.faceArt.switchFeatureTypeDown()
             self.toPrint = False
 
         # down pressed
         if ( not GPIO.input(16) ):
+            time.sleep(.01)
+            self.debounce = self.damt
             self.faceArt.switchFeatureTypeUp()
             self.toPrint = False
 
         # left pressed
         if ( not GPIO.input(13)):
+            time.sleep(.01)
+            self.debounce = self.damt
             self.faceArt.switchFeatureDown()
             self.toPrint = False
 
         # right pressed
         if (not GPIO.input(17)):
+            time.sleep(.01)
+            self.debounce = self.damt
             self.faceArt.switchFeatureUp()
             self.toPrint = False
 
@@ -127,13 +141,17 @@ class cartoonFace(wx.Frame):
         # red Button pressed
         # print
         if (not GPIO.input(6)):
+            time.sleep(.01)
+            self.debounce = self.damt
             # if we are in the correct statge, and not already printing something
             if self.stage == 2:
                 self.printImage();
 
         # black button pressed
         # capture and switch modes
-        if ( not GPIO.input(5)):
+        if ( not GPIO.input(5)) and (self.stage !=1):
+            time.sleep(.01)
+            self.debounce = self.damt
             print("button pressed")
             if self.stage == 0:
                 self.stage = 1
@@ -170,7 +188,8 @@ class cartoonFace(wx.Frame):
             shape = self.predictor(gray, rect)
             shape = face_utils.shape_to_np(shape)
             faceFeatures.append(shape)
-
+        
+        self.toPrint = False
         return faceFeatures
 
 
