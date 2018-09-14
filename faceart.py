@@ -21,8 +21,8 @@ class faceArt:
 
         print("Loading eyes")
         for i in range(1,self.maxEyes+1):
-            self.eyesR.append( self.loadImage(self.imgPath + "eye" + str(i) + "_R@3x.png" ) )
-            self.eyesL.append( self.loadImage(self.imgPath + "eye" + str(i) + "_L@3x.png" ) )
+            self.eyesR.append( self.loadImage(self.imgPath + "eye" + str(i) + "_L@3x.png" ) )
+            self.eyesL.append( self.loadImage(self.imgPath + "eye" + str(i) + "_R@3x.png" ) )
 
         print("Loading Mouths")
         self.mouths = []
