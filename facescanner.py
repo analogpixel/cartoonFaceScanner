@@ -155,8 +155,8 @@ class cartoonFace(wx.Frame):
             self.debounce = self.damt
             print("button pressed")
             if self.stage == 0:
-                self.stage = 1
                 self.staticBitmap.SetBitmap(self.loadingImage)
+                self.stage = 1
             else:
                 self.stage = 0
                 self.detector = False
