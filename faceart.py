@@ -18,11 +18,12 @@ class faceArt:
         self.featureType = 0
         self.featureList = ['eyes','mouths', 'nose']
 
+        self.currentEyeScale = -1
 
         print("Loading eyes")
         for i in range(1,self.maxEyes+1):
-            self.eyesR.append( self.loadImage(self.imgPath + "eye" + str(i) + "_L@3x.png" ) )
-            self.eyesL.append( self.loadImage(self.imgPath + "eye" + str(i) + "_R@3x.png" ) )
+            self.eyesR.append( self.loadImage(self.imgPath + "eye" + str(i) + "_R@3x.png" ) )
+            self.eyesL.append( self.loadImage(self.imgPath + "eye" + str(i) + "_L@3x.png" ) )
 
         print("Loading Mouths")
         self.mouths = []
@@ -42,6 +43,7 @@ class faceArt:
         if 'w' in kwargs:
             size = image.GetSize()
             wscale = kwargs['w'] / size.width
+            self.currentEyeScale = size.height * wscale
             image = image.Scale(size.width * wscale, size.height * wscale, wx.IMAGE_QUALITY_HIGH)
 
         return image.ConvertToBitmap()

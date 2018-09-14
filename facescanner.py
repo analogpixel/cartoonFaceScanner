@@ -317,8 +317,7 @@ class cartoonFace(wx.Frame):
                 noseX = self.faceFeatures[0][28][0]
                 noseYTop = self.faceFeatures[0][28][1]
                 noseYBottom = self.faceFeatures[0][34][1]
-                noseWidth = (self.faceFeatures[0][32][0] - self.faceFeatures[0][36][0]) * 1
-
+                noseWidth = (self.faceFeatures[0][32][0] - self.faceFeatures[0][36][0]) * 1.2
 
                 self.toPrint = wx.Bitmap(self.cw, self.ch)
                 dc     = wx.MemoryDC(self.toPrint)
@@ -327,26 +326,31 @@ class cartoonFace(wx.Frame):
 
                 rwidth = (eyeR2-eyeR1)*4
                 lwidth = (eyeL2-eyeL1)*4
-                mwidth = (mouthR-mouthL)*2.2
+                mwidth = (mouthR-mouthL)*2.0
 
+                # draw the nose
                 dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.noses[self.faceArt.currentNose], w=noseWidth),
                     noseX-(noseWidth/2),
                     (noseYTop+noseYBottom)/2 + self.ch * 0.008,
                     True)
 
+                # draw the RIGHT eye
                 dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesR[self.faceArt.currentEyes], w=rwidth) ,
-                    eyeRC - (rwidth /2) -10  ,
-                    eyeR1y-15 - self.ch * .01,
+                    eyeR1 - (rwidth/2),
+                    eyeR1y - (self.faceArt.currentEyeScale / 2),
                     True)
 
+                # draw the LEFT eye
                 dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.eyesL[self.faceArt.currentEyes], w=rwidth) ,
-                    eyeLC - (lwidth /2) +10  - self.ch * .01,
-                    eyeR1y-15,
+                    eyeL1 - (rwidth/2),
+                    eyeL1y - (self.faceArt.currentEyeScale / 2),
                     True)
 
+                # Draw the mouth
                 dc.DrawBitmap( self.faceArt.bitmap( self.faceArt.mouths[self.faceArt.currentMouth],
                                                     w=mwidth),
-                                                    mouthC - ( mwidth /2) +1 ,
+                                                    #mouthC - ( mwidth /2) +1 ,
+                                                    eyeL1,
                                                     mouthLy+4,
                                                     True)
 
